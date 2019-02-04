@@ -12,6 +12,9 @@
         <div id="chart214">
             <h5>- Drawing with file data</h5>
         </div>
+        <div id="chart215">
+            <h5>- Building data practice</h5>
+        </div>
     </div>
 </template>
 
@@ -79,6 +82,30 @@ export default{
                     .attr('fill', d => {
                         return (d.name === 'Tom') ? 'red' : 'blue'
                     })
+            }).catch(e => {
+                console.log(e)
+            })
+
+            //2-15
+            d3.json('/data/buildings.json').then(data => {
+                data.forEach(el => {
+                    el.height = +el.height 
+                })
+
+                var svg215 = d3.select('#chart215').append('svg')
+                    .attr('width', 400)
+                    .attr('height', 500)
+                var circles215 = svg215.selectAll('circle').data(data)
+                circles215.enter().append('rect')
+                    .attr('x', (d, i) => {
+                        return (i * 30)
+                    })
+                    .attr('y', 0)
+                    .attr('width', 25)
+                    .attr('height', d => {
+                        return d.height
+                    })
+                    .attr('fill', 'grey')
             })
         }
     },
@@ -89,9 +116,5 @@ export default{
 
 </script>
 <style lang="stylus">
-h3
-    margin 90px 0px 20px 0px  
-h5
-    text-align left
-    padding 20px 0px 10px 20px
+@import '../style/section.styl'
 </style>
