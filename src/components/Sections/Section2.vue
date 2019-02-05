@@ -116,5 +116,5 @@ export default{
 
 </script>
 <style lang="stylus">
-@import '../style/section.styl'
+@import '../../style/section.styl'
 </style>
