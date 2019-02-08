@@ -10,6 +10,8 @@
   "dependencies": {
     "bootstrap-vue": "^2.0.0-rc.11",
     "d3": "^5.8.0",
+    "d3-selection-multi": "^1.0.1",
+    "d3-tip": "^0.9.1",
     "vue": "^2.5.22",
     "vue-router": "^3.0.1"
   },
