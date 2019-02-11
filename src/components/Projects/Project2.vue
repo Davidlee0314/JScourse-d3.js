@@ -6,7 +6,17 @@
             </b-navbar-brand>
             <h4>Project 2</h4>
         </b-navbar>
-        <b-button v-show="buttonShow" @click="keepDrawChart(true)" variant="info" :style="{padding: '10px 30px'}">Restart</b-button>
+        <b-button @click="keepDrawChart(status)" variant="info" :style="{padding: '10px 30px'}">{{ status }}</b-button>
+        <b-button @click="keepDrawChart('restart')" variant="info" :style="{marginLeft: '20px', padding: '10px 30px'}">Restart</b-button>
+        <b-form-select :style="{width: '30%', marginLeft: '20px'}" class="custom-select" v-model="continentFilter">
+            <template slot="first">
+                <option value="all">All</option>
+            </template>       
+            <option value="africa" >Africa</option>
+            <option value="europe" >Europe</option>
+            <option value="asia" >Asia</option>
+            <option value="americas" >Americas</option>
+        </b-form-select>
         <div class="project2-chart"></div>
     </div>
 </template>
@@ -14,11 +24,17 @@
 <script>
 import * as d3 from 'd3'
 import "d3-selection-multi"
+import d3Tip from 'd3-tip'
+d3.tip = d3Tip
+
 export default {
     data(){
         return {
             project2data: undefined,
-            buttonShow: false,
+            status: 'Pause',
+            indexInterval: 0,
+            timeInterval: undefined,
+            continentFilter: 'all',
             chart: {
                 width: undefined,
                 height: undefined,
@@ -26,16 +42,56 @@ export default {
                 x: undefined,
                 y: undefined,
                 r: undefined,
-                margin: {top: 10, left: 100, bottom: 100, right: 10}
+                margin: {top: 10, left: 100, bottom: 100, right: 10},
+                tip: undefined
             }
         }   
+    },
+    watch: {
+        continentFilter: function(){
+            if(this.status === 'Play'){
+                //filter the data with null
+                var tmp = this.project2data[this.indexInterval].countries.filter(el => {
+                    return el.income !== null && el.population !== null && el.population !== '0' && el.life_exp !== null
+                })
+                //filter with continentfilter
+                tmp = tmp.filter(el => {
+                    if(this.continentFilter == 'all'){ return true }
+                    else{
+                        return el.continent == this.continentFilter
+                    }
+                })
+
+                let circles = this.chart.g.selectAll('circle').data(tmp, d =>{ return d.country })
+                circles.exit().remove()
+                circles.enter().append('circle')
+                    .attr('fill', d => {
+                            let color = {
+                                asia: '#66c2a5',
+                                europe: '#fc8d62',
+                                americas: '#8da0cb',
+                                africa: '#e78ac3'
+                            }
+                            return color[d.continent]})
+                    .merge(circles)
+                    .attrs({'cx': d => this.chart.x(d.income),
+                        'cy': d => this.chart.y(d.life_exp),
+                        'r': d => {
+                            if(d.income === null || d.life_exp === null){
+                                return 0
+                            }else{
+                                return this.chart.r(d.population)
+                            }}
+                    })
+            }
+        }
     },
     methods: {
         readData(){
             d3.json('/data/project2data.json').then(data => {
                 this.project2data = JSON.parse(JSON.stringify(data))
                 this.createSVG()
-                this.keepDrawChart(false)
+                this.keepDrawChart('start')
             }).catch(e => {
                 console.log(e)
             })
@@ -53,25 +109,93 @@ export default {
                     'transform': `translate(${this.chart.margin.left},${this.chart.margin.top})`,
                 })
         },
-        keepDrawChart(restart){
-            this.buttonShow = false
-            let i = 0
-            var chartAnimate = setInterval(() => {
-                (i == 0 && !restart) ? this.drawChart(i, false) : this.drawChart(i, true)
-                if(i > 213){
-                    clearInterval(chartAnimate)
-                    this.buttonShow = true
-                    // i = 0
-                }else{
-                    i++
-                }
-            }, 50)
+        keepDrawChart(condition){
+            var update = false
+            if(condition === 'restart'){
+                this.status = 'Pause'
+                clearInterval(this.timeInterval)
+                update = true
+                this.indexInterval = 0
+                this.timeInterval = setInterval(() => {
+                    this.drawChart(this.indexInterval, update)
+                    if(this.indexInterval > 213){
+                        this.indexInterval = 0
+                    }else{
+                        this.indexInterval++
+                    }
+                }, 50)
+
+                //hide tooltip
+                this.chart.g.selectAll('circle')
+                    .on("mouseover", null)
+                    .on("mouseout", null)
+            }else if(condition === 'Pause'){
+                clearInterval(this.timeInterval)
+                this.status = 'Play'
+                
+                //show tooltip
+                this.chart.g.selectAll('circle')
+                    .on("mouseover", this.chart.tip.show)
+                    .on("mouseout", this.chart.tip.hide)
+            }else if(condition === 'Play'){
+                this.status = 'Pause'
+                update = true
+                this.timeInterval = setInterval(() => {
+                    this.drawChart(this.indexInterval, update)
+                    if(this.indexInterval > 213){
+                        this.indexInterval = 0
+                    }else{
+                        this.indexInterval++
+                    }
+                }, 50)
+
+                //hide tooltip
+                this.chart.g.selectAll('circle')
+                    .on("mouseover", null)
+                    .on("mouseout", null)
+            }else if(condition === 'start'){
+                this.indexInterval = 0
+                this.drawChart(this.indexInterval, update)
+                this.indexInterval++
+                update = true
+                this.timeInterval = setInterval(() => {
+                    this.drawChart(this.indexInterval, update)
+                    if(this.indexInterval > 213){
+                        this.indexInterval = 0
+                    }else{
+                        this.indexInterval++
+                    }
+                }, 50)
+            }
         },
         drawChart(i, update){
-            //filter the data 
+            //filter the data with null
             var tmp = this.project2data[i].countries.filter(el => {
                 return el.income !== null && el.population !== null && el.population !== '0' && el.life_exp !== null
             })
+
+            //filter with continentfilter
+            tmp = tmp.filter(el => {
+                if(this.continentFilter == 'all'){ return true }
+                else{
+                    return el.continent == this.continentFilter
+                }
+            })
+
+            //tooltip
+            this.chart.tip = d3.tip()
+                .attr('class', 'tooltip')
+                .style('background', 'rgba(10,10,10,0.8)')
+                .style('border-radius', '10px')
+                .style('padding', '10px')
+                .html(d => {
+                    return `<strong style="color:white">Country:  </strong><span style="color:red; font-weight:bold">${d.country}</span><br>
+                            <strong style="color:white">Continent:  </strong><span style="color:red; font-weight:bold">${d.continent}</span><br>
+                            <strong style="color:white">Life Expectancy:  </strong><span style="color:red; font-weight:bold">${d.life_exp}</span><br>
+                            <strong style="color:white">GDP Per Capita:  </strong><span style="color:red; font-weight:bold">${d.income}</span><br>
+                            <strong style="color:white">Population:  </strong><span style="color:red; font-weight:bold">${d.population}</span><br>`
+                })
+            this.chart.g.call(this.chart.tip)
 
             if(!update){
                 //add the axis text
@@ -163,8 +287,6 @@ export default {
                         })
                 })
             }else{
-                // let t = d3.transition().duration(50)
-
                 //update the year label
                 this.chart.g.select('.year').remove()
 
@@ -190,8 +312,6 @@ export default {
                                 return this.chart.r(d.population)
                             }}
                     })
-
-
             }
             this.chart.g.append('text').text(this.project2data[i].year)
                 .attrs({
