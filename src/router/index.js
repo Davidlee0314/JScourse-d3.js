@@ -7,6 +7,7 @@ import Section4 from '@/components/Sections/Section4'
 import Section6 from '@/components/Sections/Section6'
 import Project1 from '@/components/Projects/Project1'
 import Project2 from '@/components/Projects/Project2'
+import Project3 from '@/components/Projects/Project3'
 
 Vue.use(Router)
 
@@ -46,6 +47,11 @@ export default new Router({
       path: '/Section6',
       name: 'Section6',
       component: Section6
+    },
+    {
+      path: '/Project3',
+      name: 'Project3',
+      component: Project3
     },
   ]
 })

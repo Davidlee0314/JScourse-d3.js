@@ -22,6 +22,9 @@
                     <b-nav-item>
                         <router-link to="/Project2" tag="li">Project 2</router-link>
                     </b-nav-item>
+                    <b-nav-item>
+                        <router-link to="/Project3" tag="li">Project 3</router-link>
+                    </b-nav-item>
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
