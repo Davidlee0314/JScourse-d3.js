@@ -214,21 +214,8 @@ export default {
 @import '../../style/section.styl'
 .input-group
     width 80%
-<<<<<<< HEAD
 .btn-danger, .btn-info
     margin 10px
-=======
-.btn-danger
-    // position absolute
-    padding 5px 36px
-    margin 10px 30px
-
-.btn-info
-    // position absolute
-    padding 5px 30px
-    margin 10px 30px
-
->>>>>>> 81e02c650265bfb607d50349558d6c72c3496015
 .row  
     width 100%
 .col-6
