@@ -11,7 +11,7 @@
                 </div>
                 <select class="custom-select" v-model="monthInput">
                     <option value="default" selected>Choose...</option>
-                    <option v-for="(val, index) in monthPreset" :value="monthPreset[index]">{{ monthPreset[index] }}</option>
+                    <option v-for="(val, index) in monthPreset" :key="index" :value="monthPreset[index]">{{ monthPreset[index] }}</option>
                 </select>
             </div>
             <div class="input-group ml-5">
@@ -201,16 +201,8 @@ export default {
 @import '../../style/section.styl'
 .input-group
     width 80%
-.btn-danger
-    position absolute
-    padding 5px 36px
-    left 87.5%
-    top 51%
-.btn-info
-    position absolute
-    padding 5px 30px
-    left 87.5%
-    top 61.5%
+.btn-danger, .btn-info
+    margin 10px
 .row  
     width 100%
 .col-6
