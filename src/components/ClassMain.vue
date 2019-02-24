@@ -11,10 +11,19 @@
                         <router-link to="/Section3" tag="li">Section 3</router-link>
                     </b-nav-item>
                     <b-nav-item>
-                        <router-link to="/Project1" tag="li">Project 1</router-link>
+                        <router-link to="/Section4" tag="li">Section 4</router-link>
                     </b-nav-item>
                     <b-nav-item>
-                        <router-link to="/Section4" tag="li">Section 4</router-link>
+                        <router-link to="/Section6" tag="li">Section 6</router-link>
+                    </b-nav-item>
+                    <b-nav-item>
+                        <router-link to="/Project1" tag="li">Project 1</router-link>
+                    </b-nav-item>        
+                    <b-nav-item>
+                        <router-link to="/Project2" tag="li">Project 2</router-link>
+                    </b-nav-item>
+                    <b-nav-item>
+                        <router-link to="/Project3" tag="li">Project 3</router-link>
                     </b-nav-item>
                 </b-navbar-nav>
             </b-collapse>

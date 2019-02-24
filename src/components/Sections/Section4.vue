@@ -28,7 +28,7 @@
                 <div class="data">
                     <div class="dataIndividual" v-for="(obj, key) in revenueData" :key="key">
                         <p><b>{{ obj.month }}</b></p>
-                        <p class="money">${{ obj.revenue }}</p>
+                        <p class="money">${{ numFormat(obj.revenue) }}</p>
                     </div>
                 </div>
             </div>
@@ -62,6 +62,16 @@ export default {
         }
     },
     methods: {
+        numFormat(num){
+            let str = num.toString(),
+                loop = Math.floor(str.length / 3),
+                end = str.length
+            for(var i = 1; i <= loop; i++){
+                let index = end - 3 * i
+                str = str.slice(0, index) + ',' + str.slice(index, end + i - 1)
+            }
+            return str
+        },
         addData(){
             if(isNaN(parseInt(this.revenueInput))){
                 alert('Enter valid number')
@@ -125,12 +135,11 @@ export default {
                     .range([this.chart.height, 0])
                 this.chart.g.selectAll('rect').data(this.revenueData).enter()
                     .append('rect')
-                    .attr('x', d => { return this.chart.x(d.month) })
+                    .attr('x', d => { return this.chart.x(d.month) + this.chart.x.bandwidth() / 2 - 12.5})
                     .attr('y', d => { return this.chart.y(d.revenue) })
                     .attr('fill', 'orange')
                     .attr('width', 25)
                     .attr('height', d => { return this.chart.height - this.chart.y(d.revenue) })
-                    .attr('transform', 'translate(15, 0)')
                 this.axisSVG()
                 this.chart.g.append('text').text('Revenue')
                     .attr('transform', 'rotate(-90)')
@@ -146,6 +155,8 @@ export default {
                 d3.selectAll('.axis').remove()
                 this.axisSVG()
 
+                var t = d3.transition().duration(500)
+
                 //Join new data
                 var rects = this.chart.g.selectAll('rect').data(this.revenueData)
 
@@ -153,21 +164,23 @@ export default {
                 this.chart.g.exit().remove()
 
                 //Updata data
-                rects.attr('x', d => { return this.chart.x(d.month) })
-                    .attr('y', d => { return this.chart.y(d.revenue) })
-                    .attr('fill', 'orange')
+                rects.attr('fill', 'orange')
                     .attr('width', 25)
-                    .attr('height', d => { return this.chart.height - this.chart.y(d.revenue) })
-                    .attr('transform', 'translate(15, 0)')
+                    .transition(t)
+                        .attr('x', d => { return this.chart.x(d.month)  + this.chart.x.bandwidth() / 2 - 12.5})
+                        .attr('y', d => { return this.chart.y(d.revenue) })
+                        .attr('height', d => { return this.chart.height - this.chart.y(d.revenue) })
                 
                 //New data added
                 rects.enter().append('rect')
-                    .attr('x', d => { return this.chart.x(d.month) })
-                    .attr('y', d => { return this.chart.y(d.revenue) })
+                    .attr('x', d => { return this.chart.x(d.month)  + this.chart.x.bandwidth() / 2 - 12.5 })
                     .attr('fill', 'orange')
                     .attr('width', 25)
-                    .attr('height', d => { return this.chart.height - this.chart.y(d.revenue) })
-                    .attr('transform', 'translate(15, 0)')
+                    .attr('y', this.chart.height)
+                    .transition(t)
+                        .attr('y', d => { return this.chart.y(d.revenue) })
+                        .attr('height', d => { return this.chart.height - this.chart.y(d.revenue) })
+
             }
         },
         axisSVG(){
@@ -201,8 +214,21 @@ export default {
 @import '../../style/section.styl'
 .input-group
     width 80%
+<<<<<<< HEAD
 .btn-danger, .btn-info
     margin 10px
+=======
+.btn-danger
+    // position absolute
+    padding 5px 36px
+    margin 10px 30px
+
+.btn-info
+    // position absolute
+    padding 5px 30px
+    margin 10px 30px
+
+>>>>>>> 81e02c650265bfb607d50349558d6c72c3496015
 .row  
     width 100%
 .col-6

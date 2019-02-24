@@ -4,7 +4,10 @@ import ClassMain from '@/components/ClassMain'
 import Section2 from '@/components/Sections/Section2'
 import Section3 from '@/components/Sections/Section3'
 import Section4 from '@/components/Sections/Section4'
+import Section6 from '@/components/Sections/Section6'
 import Project1 from '@/components/Projects/Project1'
+import Project2 from '@/components/Projects/Project2'
+import Project3 from '@/components/Projects/Project3'
 
 Vue.use(Router)
 
@@ -34,6 +37,21 @@ export default new Router({
       path: '/Section4',
       name: 'Section4',
       component: Section4
+    },
+    {
+      path: '/Project2',
+      name: 'Project2',
+      component: Project2
+    },
+    {
+      path: '/Section6',
+      name: 'Section6',
+      component: Section6
+    },
+    {
+      path: '/Project3',
+      name: 'Project3',
+      component: Project3
     },
   ]
 })
